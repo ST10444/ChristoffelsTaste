@@ -1,0 +1,807 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
+
+
+
+import Home from './Screens/Home';
+import Login from './Screens/Login';
+import Starters from './Screens/Starters';
+import MainCourse from './Screens/MainCourse';
+import Dessert from './Screens/Dessert';
+import Menu from './Screens/Menu';
+
+const Stack = createStackNavigator()
+export default function App() {
+  return (
+    <NavigationContainer>
+    <Stack.Navigator initialRouteName='Home'>
+      <Stack.Screen name='Home' component={Home} options={{headerShown: false}}/>
+      <Stack.Screen name='Menu' component={Menu} options={{headerShown:false}}/>
+      <Stack.Screen name='Login' component={Login} options={{headerShown:false}}/>
+      <Stack.Screen name='Starters' component={Starters} options={{headerShown:false}}/>
+      <Stack.Screen name='MainCourse' component={MainCourse} options={{headerShown:false}}/>
+      <Stack.Screen name='Dessert' component={Dessert} options={{headerShown:false}}/>
+    </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    padding: 20,
+    backgroundColor: "grey",
+    
+  }
+});
+
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+const Login = () => {
+    const navigation = useNavigation();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = () => {
+        if (username && password) {
+            // Here you can add authentication logic (API calls, etc.)
+            Alert.alert('Login Successful', `Welcome, ${username}!`);
+            // Navigate to the next screen after login (e.g., ClientsMenu)
+            navigation.navigate('Menu');
+        } else {
+            Alert.alert('Error', 'Please enter both username and password.');
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Login</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+            <Button title="Login" onPress={handleLogin} />
+        </View>
+    );
+};
+
+export default Login;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'black',
+        padding: 16,
+    },
+    title: {
+        color: 'white',
+        fontSize: 24,
+        marginBottom: 20,
+    },
+    input: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginBottom: 20,
+        paddingHorizontal: 10,
+        width: '100%',
+        backgroundColor: 'white',
+    },
+});
+import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+const Home = () => {
+  const navigation = useNavigation();
+
+  const handleLoginPress = () => {
+    // Navigate to the Login page
+    navigation.navigate('Login'); // Replace 'Login' with the actual name of your login route
+  };
+
+  const handleEnterPress = () => {
+    // Handle the Enter button action
+    console.log("Enter button pressed");
+    // You can add your logic here
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>ChristoffelsTaste</Text>
+
+      <Image
+        source={require('./Logo.png')}
+        style={styles.logo} // Add styles to the logo
+      />
+
+      <TouchableOpacity style={styles.loginButton} onPress={handleLoginPress}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+
+      
+    </View>
+  );
+};
+
+export default Home;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  logo: {
+    width: 450, // Adjust as needed
+    height: 450, // Adjust as needed
+    marginBottom: 20,
+  },
+  loginButton: {
+    backgroundColor: 'green', // Button color for Login
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 10, // Space between buttons
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Image } from 'react-native';
+import React, { useState } from 'react';
+
+const Menu = ({ navigation }) => {
+  const [dishName, setDishName] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('Starters');
+  const [menuItems, setMenuItems] = useState([]);
+  const [showCategories, setShowCategories] = useState(false);
+
+  const categories = ['Starters', 'Main Course', 'Dessert'];
+
+  const addDish = () => {
+    if (dishName && description && price) {
+      const newItem = {
+        name: dishName,
+        description,
+        price,
+        category,
+      };
+      setMenuItems([...menuItems, newItem]);
+      setDishName('');
+      setDescription('');
+      setPrice('');
+    }
+  };
+
+  const deleteDish = (index) => {
+    const updatedItems = menuItems.filter((_, i) => i !== index);
+    setMenuItems(updatedItems);
+  };
+
+  const renderCategoryItems = (category) => {
+    const filteredItems = menuItems.filter(item => item.category === category);
+
+    return (
+      <View>
+        <Text style={styles.categoryTitle}>{category}</Text>
+        {filteredItems.length === 0 ? (
+          <Text>No dishes available in this category.</Text>
+        ) : (
+          <FlatList
+            data={filteredItems}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <View style={styles.menuItemContainer}>
+                <Text style={styles.menuItem}>{item.name}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.price}>{item.price}</Text>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => deleteDish(index)}>
+                  <Text style={styles.deleteButtonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        )}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* Clickable Logo */}
+      <TouchableOpacity onPress={() => navigation.navigate('Starters')}>
+        <Image
+          source={require('./Logo.png')} // Update this path to your logo
+          style={styles.logo}
+        />
+      </TouchableOpacity>
+
+      <Text style={styles.title}>Chef Menu Management</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Dish Name"
+        value={dishName}
+        onChangeText={setDishName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Description"
+        value={description}
+        onChangeText={setDescription}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Price"
+        value={price}
+        keyboardType="numeric"
+        onChangeText={setPrice}
+      />
+
+      {/* Dropdown for Categories */}
+      <TouchableOpacity onPress={() => setShowCategories(!showCategories)} style={styles.dropdown}>
+        <Text style={styles.dropdownText}>{category}</Text>
+      </TouchableOpacity>
+      
+      {showCategories && (
+        <FlatList
+          data={categories}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.categoryItem}
+              onPress={() => {
+                setCategory(item);
+                setShowCategories(false);
+              }}
+            >
+              <Text style={styles.categoryText}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+
+      <TouchableOpacity style={styles.button} onPress={addDish}>
+        <Text style={styles.buttonText}>Add Dish</Text>
+      </TouchableOpacity>
+
+      {/* Render items for each category */}
+      {categories.map(renderCategoryItems)}
+    </View>
+  );
+};
+
+export default Menu;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f9f9f9',
+  },
+  logo: {
+    width: 100,
+    height: 50,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  
+  input: {
+    height: 40,
+    borderColor: 'white',
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+    
+  },
+  dropdown: {
+    padding: 10,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 15,
+  },
+  dropdownText: {
+    fontSize: 16,
+  },
+  categoryItem: {
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  categoryText: {
+    fontSize: 16,
+  },
+  categoryTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  menuItemContainer: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginBottom: 10,
+  },
+  menuItem: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  description: {
+    fontSize: 14,
+    color: '#666',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 5,
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
+import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+
+interface StartersProps {
+  navigation: any; // Replace with a more specific type if needed
+}
+
+const Starters = ({ navigation }) => {
+  const starterItems = [
+    {
+      name: 'Bruschetta',
+      description: 'Grilled bread topped with diced tomatoes, garlic, and basil.',
+      price: 'R150.00',
+    },
+    
+    
+  ];
+
+  return (
+    <View style={styles.container}>
+      {/* Arrow container with the back arrow */}
+      <View style={styles.arrowContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.arrowButton}>
+          <Text style={styles.arrow}>Back</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Logo centered above the navigation bar */}
+      <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
+        <Image
+          source={require('./Logo.png')} // Update this path to your logo
+          style={styles.logo}
+        />
+      </TouchableOpacity>
+
+      {/* Navigation bar */}
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => navigation.navigate('Starters')}>
+          <Text style={styles.navItem}>Starters</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('MainCourse')}>
+          <Text style={styles.navItem}>Main Course</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Dessert')}>
+          <Text style={styles.navItem}>Dessert</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.title}>Starters Menu</Text>
+      {starterItems.map((item, index) => (
+        <View key={index} style={styles.menuItemContainer}>
+          <Text style={styles.menuItem}>{item.name}</Text>
+          <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.price}>{item.price}</Text>
+        </View>
+      ))}
+    </View>
+  );
+};
+
+export default Starters;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: 'black',
+  },
+  arrowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 10, // Space below the arrow
+  },
+  arrowButton: {
+    padding: 15,
+    color: 'white',
+  },
+  arrow: {
+    fontSize: 24,
+    color: 'white',
+  },
+  logo: {
+    width: 110, // Adjust width as needed
+    height: 70, // Adjust height as needed
+    alignSelf: 'center', // Center the logo
+    marginBottom: 10, // Space below the logo
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  navItem: {
+    fontSize: 18,
+    color: 'white',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'white'
+  },
+  menuItemContainer: {
+    marginBottom: 15, // Space between menu items
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#222', // Optional: background color for the item
+  },
+  menuItem: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  description: {
+    fontSize: 14,
+    color: 'grey',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+});
+import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+
+interface MainCourseProps {
+  navigation: any; // Replace with a more specific type if needed
+}
+
+const MainCourse = ({ navigation }) => {
+  const mainCourseItems = [
+    {
+      name: 'Grilled Salmon',
+      description: 'Delicious grilled salmon served with lemon butter sauce.',
+      price: 'R15.00',
+    },
+    {
+      name: 'Chicken Alfredo',
+      description: 'Creamy Alfredo sauce over fettuccine pasta with grilled chicken.',
+      price: 'R13.00',
+    },
+    {
+      name: 'Vegetable Stir Fry',
+      description: 'Mixed seasonal vegetables stir-fried in a savory sauce.',
+      price: 'R11.00',
+    },
+    {
+      name: 'Beef Tacos',
+      description: 'Soft tacos filled with seasoned beef and fresh toppings.',
+      price: 'R12.00',
+    },
+    {
+      name: 'Pasta Primavera',
+      description: 'Pasta tossed with fresh vegetables and light olive oil.',
+      price: 'R10.00',
+    },
+  ];
+
+  return (
+    <View style={styles.container}>
+      {/* Arrow container with the back arrow */}
+      <View style={styles.arrowContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.arrowButton}>
+          <Text style={styles.arrow}>Back</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Logo centered above the navigation bar */}
+      <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
+        <Image
+          source={require('./Logo.png')} // Update this path to your logo
+          style={styles.logo}
+        />
+      </TouchableOpacity>
+
+      {/* Navigation bar */}
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => navigation.navigate('Starters')}>
+          <Text style={styles.navItem}>Starters</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('MainCourse')}>
+          <Text style={styles.navItem}>Main Course</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Dessert')}>
+          <Text style={styles.navItem}>Dessert</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.title}>Main Course </Text>
+      {mainCourseItems.map((item, index) => (
+        <View key={index} style={styles.menuItemContainer}>
+          <Text style={styles.menuItem}>{item.name}</Text>
+          <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.price}>{item.price}</Text>
+        </View>
+      ))}
+    </View>
+  );
+};
+
+export default MainCourse;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: 'black',
+  },
+  arrowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 10,
+  },
+  arrowButton: {
+    padding: 10,
+  },
+  arrow: {
+    fontSize: 24,
+    color: 'white',
+  },
+  logo: {
+    width: 100, // Adjust width as needed
+    height: 50, // Adjust height as needed
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  navItem: {
+    fontSize: 18,
+    color: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'white',
+  },
+  menuItemContainer: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#222', // Dark background for item
+    marginBottom: 15,
+  },
+  menuItem: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  description: {
+    fontSize: 14,
+    color: '#aaa',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+});
+import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+
+interface DessertProps {
+  navigation: any; // Replace with a more specific type if needed
+}
+
+const Dessert = ({ navigation }) => {
+  const dessertItems = [
+    {
+      name: 'Tiramisu',
+      description: 'Classic Italian dessert made with coffee-soaked ladyfingers.',
+      price: 'R7.00',
+    },
+    {
+      name: 'Chocolate Lava Cake',
+      description: 'Rich chocolate cake with a gooey molten center.',
+      price: 'R8.00',
+    },
+    {
+      name: 'Cheesecake',
+      description: 'Creamy cheesecake with a graham cracker crust.',
+      price: 'R6.50',
+    },
+    {
+      name: 'Apple Pie',
+      description: 'Traditional apple pie with a flaky crust and cinnamon.',
+      price: 'R5.50',
+    },
+    {
+      name: 'Panna Cotta',
+      description: 'Silky smooth Italian dessert topped with berry sauce.',
+      price: 'R6.00',
+    },
+  ];
+
+  return (
+    <View style={styles.container}>
+      {/* Arrow container with the back arrow */}
+      <View style={styles.arrowContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.arrowButton}>
+          <Text style={styles.arrow}>Back</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Logo centered above the navigation bar */}
+      <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
+        <Image
+          source={require('./Logo.png')} // Update this path to your logo
+          style={styles.logo}
+        />
+      </TouchableOpacity>
+
+      {/* Navigation bar */}
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => navigation.navigate('Starters')}>
+          <Text style={styles.navItem}>Starters</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('MainCourse')}>
+          <Text style={styles.navItem}>Main Course</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Dessert')}>
+          <Text style={styles.navItem}>Dessert</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.title}>Dessert Menu</Text>
+      {dessertItems.map((item, index) => (
+        <View key={index} style={styles.menuItemContainer}>
+          <Text style={styles.menuItem}>{item.name}</Text>
+          <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.price}>{item.price}</Text>
+        </View>
+      ))}
+    </View>
+  );
+};
+
+export default Dessert;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: 'black',
+  },
+  arrowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 10,
+  },
+  arrowButton: {
+    padding: 10,
+  },
+  arrow: {
+    fontSize: 24,
+    color: 'white',
+  },
+  logo: {
+    width: 100, // Adjust width as needed
+    height: 50, // Adjust height as needed
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  navItem: {
+    fontSize: 18,
+    color: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'white',
+  },
+  menuItemContainer: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#222', // Dark background for item
+    marginBottom: 15,
+  },
+  menuItem: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  description: {
+    fontSize: 14,
+    color: '#aaa',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+});
