@@ -10,10 +10,9 @@ const Home = () => {
     navigation.navigate('Login'); // Replace 'Login' with the actual name of your login route
   };
 
-  const handleEnterPress = () => {
-    // Handle the Enter button action
-    console.log("Enter button pressed");
-    // You can add your logic here
+  const handleReservePress = () => {
+    // Navigate to the Reservation page
+    navigation.navigate('Reservation'); // Replace 'Reservation' with the actual name of your reservation route
   };
 
   return (
@@ -29,7 +28,9 @@ const Home = () => {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      
+      <TouchableOpacity style={styles.reserveButton} onPress={handleReservePress}>
+        <Text style={styles.buttonText}>Reserve</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -55,6 +56,13 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: 'green', // Button color for Login
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 10, // Space between buttons
+  },
+  reserveButton: {
+    backgroundColor: 'green', // Button color for Reserve
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

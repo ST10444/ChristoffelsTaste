@@ -1,20 +1,43 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface StartersProps {
   navigation: any; // Replace with a more specific type if needed
 }
 
-const Starters = ({ navigation }) => {
-  const starterItems = [
+const Starters = ({ navigation }: StartersProps) => {
+  // State to store the starter items
+  const [starterItems, setStarterItems] = useState([
     {
       name: 'Bruschetta',
       description: 'Grilled bread topped with diced tomatoes, garlic, and basil.',
-      price: 'R150.00',
+      price: 150.00, // Store the price as a number for easy calculations
     },
-    
-    
-  ];
+    // You can add more starter items here
+  ]);
+
+  // Function to calculate the average price of all meals
+  const calculateAveragePrice = () => {
+    const totalPrice = starterItems.reduce((sum, item) => sum + item.price, 0);
+    return (totalPrice / starterItems.length).toFixed(2); // Return as a string with 2 decimal places
+  };
+
+  // Function to handle adding a new starter (just an example, in a real app it would come from a form)
+  const addNewStarter = () => {
+    const newStarter = {
+      name: 'Caprese Salad',
+      description: 'Fresh mozzarella, tomatoes, and basil drizzled with olive oil.',
+      price: 180.00,
+    };
+
+    setStarterItems([...starterItems, newStarter]); // Add the new starter and update the state
+  };
+
+  // Function to handle deleting a starter item
+  const deleteStarter = (index: number) => {
+    const newStarterItems = starterItems.filter((_, i) => i !== index); // Remove item at the given index
+    setStarterItems(newStarterItems); // Update the state with the new list
+  };
 
   return (
     <View style={styles.container}>
@@ -47,13 +70,31 @@ const Starters = ({ navigation }) => {
       </View>
 
       <Text style={styles.title}>Starters Menu</Text>
+
+      {/* Display the starter items */}
       {starterItems.map((item, index) => (
         <View key={index} style={styles.menuItemContainer}>
           <Text style={styles.menuItem}>{item.name}</Text>
           <Text style={styles.description}>{item.description}</Text>
-          <Text style={styles.price}>{item.price}</Text>
+          <Text style={styles.price}>R{item.price.toFixed(2)}</Text>
+
+          {/* Delete button for each starter item */}
+          <TouchableOpacity onPress={() => deleteStarter(index)} style={styles.deleteButton}>
+            <Text style={styles.deleteButtonText}>Delete</Text>
+          </TouchableOpacity>
         </View>
       ))}
+
+      {/* Average price display */}
+      <View style={styles.averagePriceContainer}>
+        <Text style={styles.averagePriceLabel}>Average Price:</Text>
+        <Text style={styles.averagePrice}>R{calculateAveragePrice()}</Text>
+      </View>
+
+      {/* Button to simulate adding a new starter */}
+      <TouchableOpacity onPress={addNewStarter} style={styles.addButton}>
+        <Text style={styles.addButtonText}>Add New Starter</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -120,6 +161,44 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: 'white',
+  },
+  averagePriceContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#333',
+    borderRadius: 8,
+  },
+  averagePriceLabel: {
+    fontSize: 18,
+    color: 'white',
+    marginBottom: 10,
+  },
+  averagePrice: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'yellow',
+  },
+  addButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#4CAF50',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    fontSize: 18,
+    color: 'white',
+  },
+  deleteButton: {
+    marginTop: 10,
+    padding: 8,
+    backgroundColor: '#F44336',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    fontSize: 16,
     color: 'white',
   },
 });

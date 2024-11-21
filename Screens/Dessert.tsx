@@ -1,45 +1,54 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface DessertProps {
   navigation: any; // Replace with a more specific type if needed
 }
 
-const Dessert = ({ navigation }) => {
-  const dessertItems = [
+const Dessert = ({ navigation }: DessertProps) => {
+  // State to manage the dessert items
+  const [dessertItems, setDessertItems] = useState([
     {
       name: 'Tiramisu',
       description: 'Classic Italian dessert made with coffee-soaked ladyfingers.',
       price: 'R7.00',
     },
-    {
-      name: 'Chocolate Lava Cake',
-      description: 'Rich chocolate cake with a gooey molten center.',
-      price: 'R8.00',
-    },
-    {
-      name: 'Cheesecake',
-      description: 'Creamy cheesecake with a graham cracker crust.',
-      price: 'R6.50',
-    },
-    {
-      name: 'Apple Pie',
-      description: 'Traditional apple pie with a flaky crust and cinnamon.',
-      price: 'R5.50',
-    },
-    {
-      name: 'Panna Cotta',
-      description: 'Silky smooth Italian dessert topped with berry sauce.',
-      price: 'R6.00',
-    },
-  ];
+    // Add more items as needed
+  ]);
+
+  // Function to calculate the average price
+  const calculateAveragePrice = () => {
+    const totalPrice = dessertItems.reduce(
+      (acc, item) => acc + parseFloat(item.price.replace('R', '')),
+      0
+    );
+    return totalPrice / dessertItems.length;
+  };
+
+  // Function to simulate adding a new item
+  const addNewItem = () => {
+    const newItem = {
+      name: 'Chocolate Cake',
+      description: 'Rich and moist chocolate cake with a creamy frosting.',
+      price: 'R9.00',
+    };
+
+    // Update the dessert items list
+    setDessertItems([...dessertItems, newItem]);
+  };
+
+  // Function to handle deleting a dessert item
+  const deleteItem = (index: number) => {
+    const newDessertItems = dessertItems.filter((_, i) => i !== index); // Remove item at the given index
+    setDessertItems(newDessertItems); // Update the state with the new list
+  };
 
   return (
     <View style={styles.container}>
       {/* Arrow container with the back arrow */}
       <View style={styles.arrowContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.arrowButton}>
-          <Text style={styles.arrow}>Back</Text>
+          <Text style={styles.arrow}>←</Text>
         </TouchableOpacity>
       </View>
 
@@ -64,14 +73,30 @@ const Dessert = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Title for the section */}
       <Text style={styles.title}>Dessert Menu</Text>
+
+      {/* Dessert Menu Items */}
       {dessertItems.map((item, index) => (
         <View key={index} style={styles.menuItemContainer}>
           <Text style={styles.menuItem}>{item.name}</Text>
           <Text style={styles.description}>{item.description}</Text>
           <Text style={styles.price}>{item.price}</Text>
+
+          {/* Delete button for each dessert item */}
+          <TouchableOpacity onPress={() => deleteItem(index)} style={styles.deleteButton}>
+            <Text style={styles.deleteButtonText}>Delete</Text>
+          </TouchableOpacity>
         </View>
       ))}
+
+      {/* Average Price */}
+      <Text style={styles.averagePrice}>Average Price: R{calculateAveragePrice().toFixed(2)}</Text>
+
+      {/* Button to add a new dessert item */}
+      <TouchableOpacity style={styles.addButton} onPress={addNewItem}>
+        <Text style={styles.addButtonText}>Add New Item</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -90,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   arrowButton: {
-    padding: 10,
+    padding: 15,
   },
   arrow: {
     fontSize: 24,
@@ -138,5 +163,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
+  },
+  averagePrice: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  addButton: {
+    backgroundColor: '#4CAF50', // Green background
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    fontSize: 16,
+    color: 'white',
+  },
+  deleteButton: {
+    backgroundColor: '#F44336', // Red background
+    padding: 8,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    color: 'white',
   },
 });

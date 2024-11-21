@@ -11,6 +11,7 @@ import Starters from './Screens/Starters';
 import MainCourse from './Screens/MainCourse';
 import Dessert from './Screens/Dessert';
 import Menu from './Screens/Menu';
+import Reservation from './Screens/Reservation';
 
 const Stack = createStackNavigator()
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
       <Stack.Screen name='Starters' component={Starters} options={{headerShown:false}}/>
       <Stack.Screen name='MainCourse' component={MainCourse} options={{headerShown:false}}/>
       <Stack.Screen name='Dessert' component={Dessert} options={{headerShown:false}}/>
+      <Stack.Screen name='Reservation' component={Reservation} options={{headerShown:false}}/>
     </Stack.Navigator>
     </NavigationContainer>
   );

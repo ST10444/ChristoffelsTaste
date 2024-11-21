@@ -12,7 +12,7 @@ const Login = () => {
             // Here you can add authentication logic (API calls, etc.)
             Alert.alert('Login Successful', `Welcome, ${username}!`);
             // Navigate to the next screen after login (e.g., ClientsMenu)
-            navigation.navigate('Menu');
+            navigation.navigate('Starters');
         } else {
             Alert.alert('Error', 'Please enter both username and password.');
         }
